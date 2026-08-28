@@ -49,6 +49,15 @@ structural — `Outer.Inner` is one type regardless of which `Outer` instance
 built it. Scala's path-dependent types are stricter: the type carries the
 *instance path* (`o.` vs `oo.`) as part of its identity, not just the class.
 
+```
+   o  : Outer  ──▶  type  o.Inner      ┐
+                                        ├─ two DIFFERENT, incompatible types
+   oo : Outer  ──▶  type  oo.Inner     ┘   despite both coming from `class Outer`
+
+   o.print(inner)     ✓ compiles  (inner : o.Inner, print wants o.Inner)
+   oo.print(inner)    ✗ fails     (inner : o.Inner, oo.print wants oo.Inner)
+```
+
 ## 3. Why this matters: compile-time proof that "these came from the same instance"
 
 The practical value isn't pedantic type-checking for its own sake — it's a

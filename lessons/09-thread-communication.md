@@ -79,6 +79,29 @@ essential — if `wait()` didn't release the lock, the producer could never get
 into `container.synchronized { ... }` to produce the value and call
 `notify()`, and the two threads would deadlock immediately.
 
+```
+consumer thread                          producer thread
+────────────────                         ────────────────
+container.synchronized {
+  container.wait()
+    ├─ releases the lock
+    ├─ thread suspends here ─ ─ ─ ─ ┐
+    │                               │
+                                     │    container.synchronized {   ◀── can now acquire the lock
+                                     │      container.set(42)
+                                     │      container.notify() ─────┐
+                                     │    }  (lock released on exit) │
+                                     │                               │
+    ├─ woken, blocks until it   ◀───┴───────────────────────────────┘
+    │  can re-acquire the lock
+    └─ lock re-acquired, wait() returns
+}
+```
+Nothing the consumer does past `.wait()` runs until it both (a) gets
+notified and (b) wins the lock back — which is why the producer's
+`container.synchronized { ... }` block is guaranteed to run to completion
+first.
+
 Gotcha: `wait()` and `notify()`/`notifyAll()` **must be called from inside a
 `synchronized` block on that same object** (`container.synchronized { container.wait() }`,
 `container.synchronized { container.notify() }`), or the JVM throws

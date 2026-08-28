@@ -30,7 +30,20 @@ first `case` above actually matches (with a compiler warning), because
 
 This is **type erasure**, and it's not a Scala quirk — it's a JVM design
 decision inherited from Java, dating back to when generics were retrofitted
-onto a runtime that never had them. The consequence called out at
+onto a runtime that never had them.
+
+```
+COMPILE TIME                              │  RUNTIME (after erasure)
+──────────────────────────────────────────┼──────────────────────────
+List[Int]        ─┐                       │
+                   ├── both erase to ──▶   │        List
+List[String]      ─┘                      │  (the [Int]/[String] part is GONE)
+
+TypeTag[T]  ── a value the compiler builds at compile time that SURVIVES
+               into runtime, carrying back exactly what erasure destroys
+```
+
+The consequence called out at
 `Reflection.scala:56-58` is concrete: you *cannot* overload two methods that
 only differ by a generic type argument —
 

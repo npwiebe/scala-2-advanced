@@ -78,6 +78,16 @@ write `AHigherKindedType[List]`, `AHigherKindedType[Option]`,
 `AHigherKindedType[Future]` — but `Int` or `String` cannot, because they're
 already fully applied concrete types with no argument slot left to fill.
 
+```
+Int             kind *          — concrete, no slot left to fill
+List[Int]       kind *          — concrete, fully applied
+List            kind * -> *     — needs ONE type argument to become concrete
+F[_]            "some * -> * type constructor"  — the slot AHigherKindedType[F[_]] accepts
+
+AHigherKindedType[List]     ✓ compiles  (List has kind * -> *, fits F[_])
+AHigherKindedType[Int]      ✗ fails     (Int has kind *, nothing left to apply)
+```
+
 ## Wiring it into a type class: `Monad[F[_], A]`
 
 ```scala

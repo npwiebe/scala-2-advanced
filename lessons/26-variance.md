@@ -45,6 +45,21 @@ reason: it's extremely convenient for a `List[Cat]` to be usable anywhere a
 takes `List[Animal]`). Immutability is what makes this *safe* — see the
 mutable-container problem below.
 
+```
+Given:  Cat <: Animal
+
+                                Cat <: Animal   implies:
+Covariant      CCage[+T]   ──▶  CCage[Cat]  <:  CCage[Animal]     (same direction as T)
+Invariant      Cage[T]     ──▶  Cage[Cat]   and Cage[Animal]  — unrelated, no <: either way
+Contravariant  XCage[-T]   ──▶  XCage[Animal] <:  XCage[Cat]      (FLIPPED direction from T)
+```
+Covariant "points the same way" as the element type's own subtyping;
+contravariant "points backwards." Everything else in this lesson is either
+justifying why the backwards direction is sometimes the *safe* one
+(functions/consumers, next section) or explaining what the compiler forbids
+so that neither direction can be abused (the variance positions rule,
+section 4).
+
 ## 2. Why contravariance is the right shape for functions
 
 `Function1` in the standard library is declared
@@ -141,6 +156,18 @@ crux of the whole lesson:
 > are in covariant position.**
 >
 > (lines 99–103)
+
+```
+class SomeClass[+T] {
+  def method(x: T): R     // T is a PARAMETER  → contravariant position → FORBIDDEN for +T
+  def method(): T         // T is the RETURN   → covariant position     → allowed for +T
+}
+
+class OtherClass[-T] {
+  def method(x: T): R     // T is a PARAMETER  → contravariant position → allowed for -T
+  def method(): T         // T is the RETURN   → covariant position     → FORBIDDEN for -T
+}
+```
 
 Concretely:
 - Inside a class parameterized `+T` (covariant), `T` **cannot** appear as

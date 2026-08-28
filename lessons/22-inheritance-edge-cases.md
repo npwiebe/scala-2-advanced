@@ -99,6 +99,21 @@ type to the right in this linearized chain," which is why:
 - `Cold.print` doesn't call `super`, so the chain stops there, and `Red`
   is never reached.
 
+```
+linearization:   White → Blue → Green → Cold → Red → AnyRef
+
+color.print walks it left to right, each `super` stepping one to the right:
+
+  White.print   prints "white"   ─ super ─▶
+  Blue.print    prints "blue"    ─ super ─▶
+  Green.print   prints "green"   ─ super ─▶
+  Cold.print    prints "cold"    (no super call — chain stops HERE)
+
+  Red.print     prints "red"     ◀── never reached, despite being the
+                                      literal superclass in `class White
+                                      extends Red with Green with Blue`
+```
+
 Gotcha: this means adding a trait to a `with` list, or reordering the
 traits, can silently change which superclass method actually executes —
 even a method on your literal named superclass can become unreachable.

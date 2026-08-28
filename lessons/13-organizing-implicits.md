@@ -77,6 +77,27 @@ Local scope always wins if present, which is exactly why `reverseOrdering`
 overrides whatever a companion object might have suggested — a fact the rest
 of the lesson leans on heavily.
 
+```
+implicit Ordering[B] needed
+        │
+        ▼
+1. LOCAL SCOPE ─────── exactly one candidate? ──▶ use it, done
+        │ none
+        ▼
+2. IMPORTED SCOPE ──── exactly one candidate? ──▶ use it, done
+        │ none
+        ▼
+3. COMPANION OBJECTS (of List, Ordering, B, or any of B's supertypes)
+                  ──── exactly one candidate? ──▶ use it, done
+        │ none, or more than one at ANY step
+        ▼
+   compile error (no implicit found / ambiguous implicit)
+```
+Each stage is checked in order and the search stops at the *first* stage
+that produces exactly one match — it never "keeps looking for a better one"
+once a stage succeeds, and it never silently picks a favorite if a stage
+produces more than one.
+
 ## 4. Where you, the author, should put an implicit: companion object
 
 ```scala

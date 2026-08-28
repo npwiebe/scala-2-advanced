@@ -44,6 +44,16 @@ JSONString(user.name), ...))` by hand for every `User`, every `Post`, every
 `user.toJSON` to just work — for types you own (`User`) *and* types you
 don't (`Int`, `String`, `List`).
 
+```
+JSONValue
+ ├── JSONString(value: String)
+ ├── JSONNumber(value: Int)
+ ├── JSONArray(values: List[JSONValue])
+ └── JSONObject(values: Map[String, JSONValue])
+```
+Every JSON document, however deeply nested, is built from just these four
+shapes — that's the entire "target" the rest of the lesson converts into.
+
 ## 2. The type class: `JSONConverter[T]`
 
 ```scala
@@ -136,6 +146,11 @@ because `feed.user`'s static type is `User` and each list element's type is
 it just needs *some* `JSONConverter[User]` and `JSONConverter[Post]` to
 exist in scope.
 
+```
+FeedConverter.convert(feed)
+ ├─ needs JSONConverter[User]  ──▶ resolved implicitly ──▶ UserConverter
+ └─ needs JSONConverter[Post]  ──▶ resolved implicitly ──▶ PostConverter (× each element)
+```
 That's type classes composing: a converter for a composite type (`Feed`) is
 built out of converters for its component types (`User`, `Post`), wired
 together by implicit resolution instead of by hand. Scale this up and a

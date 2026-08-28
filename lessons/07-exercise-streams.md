@@ -53,6 +53,22 @@ because it's the value passed in when the `Cons` node was built. Only the
 *rest of the stream* is deferred. That asymmetry (eager head, lazy tail) is
 the whole trick behind an infinite structure being usable at all.
 
+```
+Cons(1, ...)               Cons(2, ...)               Cons(3, ...)
+┌─────────┬──────────┐     ┌─────────┬──────────┐     ┌─────────┬──────────┐
+│ head: 1 │ tail:    │ ──▶ │ head: 2 │ tail:    │ ──▶ │ head: 3 │ tail:    │ ──▶ ...
+│ (eager) │ thunk    │     │ (eager) │ thunk    │     │ (eager) │ thunk    │
+└─────────┴──────────┘     └─────────┴──────────┘     └─────────┴──────────┘
+             │                          │                          │
+      not run until              not run until              not run until
+      .tail is called            .tail is called            .tail is called
+      (then cached by            (then cached by            (then cached by
+       `lazy val`)                `lazy val`)                `lazy val`)
+```
+Every node's head is a known value the moment the node exists; every node's
+tail is an unopened thunk until something asks for it — that's what lets the
+chain extend forever without ever being fully built.
+
 ## 3. `#::`, the prepend operator (lines 15, 44, 64, and 101)
 
 ```scala

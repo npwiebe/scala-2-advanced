@@ -217,6 +217,19 @@ need to bridge a callback-based API (like a raw thread, a socket listener,
 or a legacy callback library) into `Future`-land: wrap it in a `Promise`,
 complete the promise from inside the callback, hand out `promise.future`.
 
+```
+                 promise.success(42)
+                        │  (write side — producer only)
+                        ▼
+   Promise[Int]  ───.future───▶  Future[Int]
+                                      │  (read side — map/flatMap/onComplete)
+                                      ▼
+                                 consumer(s)
+```
+`Future` alone has no "write" API — the whole reason `Promise` exists is to
+be that missing other half, held by whoever is producing the result while
+every consumer only ever touches the `Future`.
+
 `tryComplete` (used below) is the "safe" variant: it attempts to complete the
 promise and returns a `Boolean` saying whether it succeeded, instead of
 throwing if the promise was already completed.

@@ -27,6 +27,21 @@ really two separate function applications chained together. This is
 currying: instead of one function of two arguments, you have a function of
 one argument that produces a function of the next argument.
 
+```
+superAdder : Int => (Int => Int)
+
+  superAdder(3)                 -- first call: returns a function, x=3 baked in
+       │
+       ▼
+  ┌─────────────────┐
+  │  y => 3 + y     │            (this is add3)
+  └─────────────────┘
+       │
+  add3(5)  -- second call
+       ▼
+       8
+```
+
 ## 2. A curried *method* — multiple parameter lists
 
 ```scala
@@ -215,6 +230,22 @@ test2(() => { println("computing"); 42 })
 Both re-evaluate (or re-run) twice, but for different reasons: by-name re-evaluates
 the expression each time it's mentioned; by-function re-runs the lambda each time
 you call `f()`.
+
+```
+BY-NAME  (n: => Int)                     BY-FUNCTION  (f: () => Int)
+────────────────────────                 ──────────────────────────
+call site: test1(expr)                   call site: test2(() => expr)
+   expr NOT run yet ──┐                     lambda built, NOT run yet ──┐
+                       │                                                 │
+inside the method:     │                  inside the method:             │
+   println(n)  ────────┴─▶ runs expr        println(f())  ──────────────┴─▶ calls the lambda
+   println(n)  ──────────▶ runs expr AGAIN     println(f())  ─────────────▶ calls the lambda AGAIN
+   again                                        again
+```
+The visual point: with by-name, the *expression itself* re-runs on every
+mention of `n` — there's no function object anywhere. With by-function,
+`f` is one function object, and it's *your* explicit `f()` call that
+re-runs its body.
 
 ### Call-site compatibility — the gotchas
 
