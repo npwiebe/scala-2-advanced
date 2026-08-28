@@ -92,3 +92,4 @@ target/
 .DS_Store
 lessons.zip
 src/lectures.zip
+tools/dist/

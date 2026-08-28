@@ -1,0 +1,379 @@
+<title>Scala 2 Advanced — Study Notes</title>
+<style>
+  :root {
+    --paper: #faf8f4;
+    --paper-raised: #f2efe8;
+    --ink: #211f1c;
+    --ink-soft: #5c574e;
+    --rule: #ded8c9;
+    --accent: #9c5a1e;
+    --accent-soft: #f0e2d0;
+    --code-bg: #eee9dd;
+    --code-ink: #3c2f22;
+    --link: #7a4415;
+    --tok-kw: #6a5aa3;
+    --tok-str: #5c7a3f;
+    --tok-num: #3f7d8c;
+    --tok-ann: #a34a5c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #17151a;
+      --paper-raised: #1e1b21;
+      --ink: #e9e4dc;
+      --ink-soft: #a39c8f;
+      --rule: #38333a;
+      --accent: #d3944f;
+      --accent-soft: #34291c;
+      --code-bg: #211d24;
+      --code-ink: #dccdb6;
+      --link: #e2a869;
+      --tok-kw: #ab9cdf;
+      --tok-str: #9bc17e;
+      --tok-num: #7fc3d1;
+      --tok-ann: #e08a9c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #17151a;
+    --paper-raised: #1e1b21;
+    --ink: #e9e4dc;
+    --ink-soft: #a39c8f;
+    --rule: #38333a;
+    --accent: #d3944f;
+    --accent-soft: #34291c;
+    --code-bg: #211d24;
+    --code-ink: #dccdb6;
+    --link: #e2a869;
+    --tok-kw: #ab9cdf;
+    --tok-str: #9bc17e;
+    --tok-num: #7fc3d1;
+    --tok-ann: #e08a9c;
+  }
+  :root[data-theme="light"] {
+    --paper: #faf8f4;
+    --paper-raised: #f2efe8;
+    --ink: #211f1c;
+    --ink-soft: #5c574e;
+    --tok-kw: #6a5aa3;
+    --tok-str: #5c7a3f;
+    --tok-num: #3f7d8c;
+    --tok-ann: #a34a5c;
+    --rule: #ded8c9;
+    --accent: #9c5a1e;
+    --accent-soft: #f0e2d0;
+    --code-bg: #eee9dd;
+    --code-ink: #3c2f22;
+    --link: #7a4415;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  a { color: var(--link); text-decoration: none; border-bottom: 1px solid transparent; }
+  a:hover { border-bottom-color: currentColor; }
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    min-height: 100vh;
+  }
+
+  /* ---------- sidebar ---------- */
+  .sidebar {
+    border-right: 1px solid var(--rule);
+    background: var(--paper-raised);
+    padding: 1.75rem 1.25rem 3rem;
+    overflow-y: auto;
+    max-height: 100vh;
+    position: sticky;
+    top: 0;
+  }
+  .brand {
+    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    margin: 0 0 0.15rem;
+    text-wrap: balance;
+  }
+  .brand-sub {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.6rem;
+  }
+  .sources-link {
+    display: inline-block;
+    font-size: 0.78rem;
+    margin: 0 0 1.4rem;
+    color: var(--link);
+  }
+  .lesson p.source-link {
+    margin: -0.6rem 0 1.6rem;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+  .source-link a {
+    font-family: ui-monospace, "SF Mono", Menlo, "Cascadia Code", monospace;
+    font-size: 0.8em;
+  }
+  .search-box {
+    width: 100%;
+    padding: 0.5rem 0.65rem;
+    margin-bottom: 1.4rem;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 0.85rem;
+    font-family: inherit;
+  }
+  .search-box::placeholder { color: var(--ink-soft); }
+
+  .nav-group { margin-bottom: 1.35rem; }
+  .nav-group h2 {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--ink-soft);
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+    padding-left: 0.6rem;
+  }
+  .nav-group ul { list-style: none; margin: 0; padding: 0; }
+  .nav-group li a {
+    display: block;
+    padding: 0.32rem 0.6rem;
+    border-radius: 5px;
+    border-bottom: none;
+    color: var(--ink);
+    font-size: 0.87rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .nav-group li a:hover { background: var(--accent-soft); }
+  .nav-group li a.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .nav-group li.hidden { display: none; }
+
+  /* ---------- main content ---------- */
+  main {
+    padding: 3rem clamp(1.25rem, 5vw, 4rem);
+    max-width: 900px;
+  }
+  .lesson {
+    max-width: 68ch;
+    padding-bottom: 3.5rem;
+    margin-bottom: 3.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .lesson:last-child { border-bottom: none; }
+
+  .lesson h1 {
+    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+    font-size: 2.1rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin: 0 0 1.4rem;
+    text-wrap: balance;
+  }
+  .lesson h2 {
+    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 2.4rem 0 0.9rem;
+    text-wrap: balance;
+  }
+  .lesson h3 {
+    font-size: 1.08rem;
+    font-weight: 700;
+    margin: 1.8rem 0 0.6rem;
+  }
+  .lesson h4, .lesson h5, .lesson h6 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .lesson p { margin: 0 0 1.1rem; }
+  .lesson ul, .lesson ol { margin: 0 0 1.1rem; padding-left: 1.4rem; }
+  .lesson li { margin-bottom: 0.35rem; }
+  .lesson blockquote {
+    margin: 0 0 1.1rem;
+    padding: 0.1rem 1rem;
+    border-left: 3px solid var(--accent);
+    color: var(--ink-soft);
+  }
+  .lesson blockquote p { margin: 0.5rem 0; }
+  .lesson hr { border: none; border-top: 1px solid var(--rule); margin: 2rem 0; }
+
+  .lesson code {
+    font-family: ui-monospace, "SF Mono", Menlo, "Cascadia Code", monospace;
+    font-size: 0.87em;
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 0.12em 0.35em;
+    border-radius: 4px;
+  }
+  .lesson pre {
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    margin: 0 0 1.3rem;
+    position: relative;
+  }
+  .lesson pre code {
+    background: none;
+    padding: 0;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--code-ink);
+  }
+  .lesson pre[class^="lang-"]::before {
+    content: attr(class);
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    font-family: -apple-system, system-ui, sans-serif;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+  }
+  .lesson pre.lang-scala::before { content: "scala"; }
+  .lesson pre.lang-text::before { content: none; }
+  .lesson pre.lang-::before { content: none; }
+
+  .tok-kw { color: var(--tok-kw); font-weight: 600; }
+  .tok-type { color: var(--accent); }
+  .tok-str { color: var(--tok-str); }
+  .tok-num { color: var(--tok-num); }
+  .tok-com { color: var(--ink-soft); font-style: italic; }
+  .tok-ann { color: var(--tok-ann); }
+
+  .table-wrap { overflow-x: auto; margin-bottom: 1.3rem; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.88rem;
+    font-variant-numeric: tabular-nums;
+  }
+  th, td {
+    border: 1px solid var(--rule);
+    padding: 0.45rem 0.65rem;
+    text-align: left;
+  }
+  th {
+    background: var(--paper-raised);
+    font-weight: 600;
+  }
+
+  .theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1.25rem;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    color: var(--ink-soft);
+    border-radius: 999px;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.78rem;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+
+  @media (max-width: 780px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar {
+      position: relative;
+      max-height: none;
+      border-right: none;
+      border-bottom: 1px solid var(--rule);
+    }
+    main { padding: 2rem 1.25rem; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nav-group li a, .theme-toggle { transition: background-color 0.12s ease, color 0.12s ease; }
+  }
+</style>
+
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme">◐ theme</button>
+
+<div class="layout">
+  <nav class="sidebar" aria-label="Lesson index">
+    <p class="brand">Scala 2 Advanced</p>
+    <p class="brand-sub">Study notes &middot; 32 lessons</p>
+    <a class="sources-link" href="__SOURCES_URL__" target="_blank" rel="noopener">Browse source files &#8599;</a>
+    <input type="search" class="search-box" id="navSearch" placeholder="Filter lessons…" aria-label="Filter lessons">
+    __NAV__
+  </nav>
+  <main id="main">
+    __ARTICLES__
+  </main>
+</div>
+
+<script>
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('.sidebar a[data-target]'));
+    var sections = links.map(function (l) { return document.getElementById(l.dataset.target); });
+
+    function setActive(id) {
+      links.forEach(function (l) {
+        l.classList.toggle('active', l.dataset.target === id);
+      });
+    }
+
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      }, { rootMargin: '-10% 0px -70% 0px', threshold: 0 });
+      sections.forEach(function (s) { if (s) observer.observe(s); });
+    }
+
+    var search = document.getElementById('navSearch');
+    search.addEventListener('input', function () {
+      var q = search.value.trim().toLowerCase();
+      document.querySelectorAll('.nav-group li').forEach(function (li) {
+        var text = li.textContent.toLowerCase();
+        li.classList.toggle('hidden', q.length > 0 && text.indexOf(q) === -1);
+      });
+      document.querySelectorAll('.nav-group').forEach(function (g) {
+        var visible = g.querySelectorAll('li:not(.hidden)').length;
+        g.style.display = visible === 0 ? 'none' : '';
+      });
+    });
+
+    var toggle = document.getElementById('themeToggle');
+    var root = document.documentElement;
+    toggle.addEventListener('click', function () {
+      var current = root.getAttribute('data-theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var effectiveDark = current ? current === 'dark' : prefersDark;
+      root.setAttribute('data-theme', effectiveDark ? 'light' : 'dark');
+    });
+  })();
+</script>
