@@ -83,3 +83,12 @@ fabric.properties
 
 
 # End of https://www.gitignore.io/api/scala,intellij
+
+### Project-specific ###
+project/target/
+target/
+.idea/misc.xml
+.idea/sbt.xml
+.DS_Store
+lessons.zip
+src/lectures.zip
